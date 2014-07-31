@@ -28,8 +28,7 @@ if __name__ == '__main__':
         bucket = c.get_bucket(bucket_name)
     except S3ResponseError:
         bucket = c.create_bucket(bucket_name)
-    except S3CreateError:
-        pass
+
     mp = bucket.initiate_multipart_upload(key_name)
     for suffix in xrange(1, 1 + num_part):
         fp = open('.'.join([file_prefix, str(suffix)]))
