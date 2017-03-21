@@ -11,5 +11,6 @@ if __name__ == '__main__':
         driver = ECDriver(ec_type='jerasure_rs_vand', k=k, m=m)
         for num in range(10):
             shuffle(frags)
-            assert 'a'*100 == driver.decode(frags[:k])
+            assert 'a'*100 == driver.decode(
+                frags[:k], force_metadata_checks=True)
         print '%s passed' % str(key)

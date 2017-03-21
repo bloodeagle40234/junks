@@ -4,6 +4,7 @@ from datetime import datetime
 import os
 
 LOG_HOST = 'http://eavesdrop.openstack.org'
+JOIN_QUIT = ('joined', 'quit') 
 
 class LinkParser(HTMLParser, object):
     def __init__(self):
@@ -50,13 +51,19 @@ class NormalLogParser(object):
 
 
 class MeetingLogParser(NormalLogParser):
-    channel = 'meetings/swift/2016/'
+    channel = 'meetings/swift/'
     name_wrap = '<%s>'
     log_ext = 'log.txt'
+
+    def __init__(self, year):
+        self.year = str(year)
 
     def split_log_date(self, date_str):
         return date_str.split('-', 4)
 
+    @property
+    def base_url(self):
+        return os.path.join(LOG_HOST, self.channel, self.year)
 
 def collect_my_voice(whoami, logs):
     voices = []
@@ -64,20 +71,27 @@ def collect_my_voice(whoami, logs):
         resp = requests.get(alog)
         for line in resp.content.split('\n'):
             if whoami in line:
-                voices.append(line)
+                # ignoring just join/quit message for the channel
+                for ignore in JOIN_QUIT:
+                    if ignore in line:
+                        break
+                else:
+                    voices.append(line)
     return voices
 
 
 if __name__ == '__main__':
-    log_parser = MeetingLogParser()
-    # log_parser = NormalLogParser()
-    resp = requests.get(log_parser.base_url)
+    year = 2017
+    # log_parser = MeetingLogParser(year)
+    log_parser = NormalLogParser()
+    base_datetime = datetime(year=year, month=3, day=10)
+    resp = requests.get(os.path.join(log_parser.base_url))
     parser = LinkParser()
     parser.feed(resp.content)
-    base_datetime = datetime(year=2016, month=4, day=1)
     logs = [os.path.join(log_parser.base_url, item) for item in parser.href_attrs
             if log_parser.ext_check(item) and log_parser.latter_than(base_datetime, item)]
+    # voices = collect_my_voice(log_parser.wrap_name('m_kazuhiro'), logs)
     voices = collect_my_voice(log_parser.wrap_name('kota_'), logs)
     print '# of join: %s' % len(logs)
     print '# of voices: %s' % len(voices)
-    print voices
+    # print voices
