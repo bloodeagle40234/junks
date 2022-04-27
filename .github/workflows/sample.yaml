@@ -24,4 +24,4 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
             name: wrap.py
-            path: ${GITHUB_WORKSPACE}/wrap.py
+            path: ${{ env.GITHUB_WORKSPACE }}/wrap.py
