@@ -21,7 +21,7 @@ jobs:
 
       # Runs a single command using the runners shell
       - name: upload sample file
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v2
         with:
             name: wrap.py
             path: ${GITHUB_WORKSPACE}/wrap.py
