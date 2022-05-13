@@ -18,7 +18,9 @@ jobs:
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
+      - run: apt install postgresql-14 postgresql-server-dev-14
+      - run: cat /usr/lib/postgresql/14/lib/pgxs/src/Makefile.global
+      - run: cat /etc/apt/sources.list
       - run: sudo dpkg -l
-      - run: sudo apt install clang-14
       - run: printenv
       - run: echo $CC
